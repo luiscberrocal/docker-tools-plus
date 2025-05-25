@@ -1,14 +1,30 @@
 [project]
 name = "docker-tools"
 version = "0.1.0"
-description = "Add your description here"
+description = "CLI tool for managing Docker container cleanups"
 requires-python = ">=3.10"
 dependencies = [
-    "click>=8.2.1",
-    "pydantic>=2.11.5",
+    "click>=8.1.0",
+    "pydantic>=2.0",
+    "tomli>=2.0.0",       # For config file parsing
+    "sqlalchemy>=2.0.0"   # For database interactions
 ]
 
 [dependency-groups]
 dev = [
-    "pytest>=8.3.5",
+    "pytest>=8.0.0",
+    "ruff>=0.3.0",        # For linting/formatting
+    "coverage>=7.0.0"     # For test coverage
 ]
+
+[build-system]
+requires = ["flit_core >=3.9.0"]
+build-backend = "flit_core.buildapi"
+
+[tool.ruff]
+line-length = 120
+select = ["E", "F", "W", "I", "B"]
+ignore = ["E501", "E402"]
+
+[tool.ruff.mccabe]
+max-complexity = 10
