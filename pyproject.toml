@@ -24,7 +24,20 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = "test_*.py"
-addopts = "--cov=docker_tools --cov-report=term-missing"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = "--verbose --color=yes --cov=docker_tools --cov-report=term-missing"
+filterwarnings = ["ignore::DeprecationWarning"]
+log_cli = true
+log_level = "INFO"
+markers = [
+    "unit: mark a test as unit test",
+    "integration: mark a test as integration test",
+    "database: tests involving database operations"
+]
+minversion = "7.0"
+norecursedirs = [".venv", "build", "dist", ".git"]
+xfail_strict = true
 
 [build-system]
 requires = ["flit_core >=3.9.0"]
