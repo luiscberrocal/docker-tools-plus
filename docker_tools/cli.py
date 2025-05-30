@@ -22,7 +22,7 @@ def cli():
     init_db()
 
 @cli.command()
-@click.argument('name', help="Name or partial name of the cleanup configuration")
+@click.argument('name')
 @click.option('--force', is_flag=True, help="Skip confirmation prompts")
 def clean(name, force):
     """Execute cleanup by name.
