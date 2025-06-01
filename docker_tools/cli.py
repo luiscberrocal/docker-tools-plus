@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 @click.group()
 def cli():
     """Docker cleanup management tool"""
-    init_db()
 
 
 @cli.command()
