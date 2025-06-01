@@ -1,39 +1,30 @@
-import logging.config
-import re
 from pathlib import Path
-from typing import ClassVar, Dict, Any
-from pydantic import BaseModel, Field
+from typing import Any, ClassVar
+
 import tomli
+from pydantic import BaseModel, Field
+
 
 class Settings(BaseModel):
     """Application settings configuration"""
+
     database_path: Path = Path("cleanups.db")
     log_level: str = "INFO"
     default_timeout: int = Field(30, gt=0, description="Default timeout in seconds for Docker operations")
-    
-    logging_config: ClassVar[Dict[str, Any]] = {
+
+    logging_config: ClassVar[dict[str, Any]] = {
         "version": 1,
         "disable_existing_loggers": False,
-        "formatters": {
-            "standard": {
-                "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-            }
-        },
+        "formatters": {"standard": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}},
         "handlers": {
             "default": {
                 "level": "INFO",
                 "formatter": "standard",
                 "class": "logging.StreamHandler",
-                "stream": "ext://sys.stdout"
+                "stream": "ext://sys.stdout",
             }
         },
-        "loggers": {
-            "docker_tools": {
-                "handlers": ["default"],
-                "level": "INFO",
-                "propagate": False
-            }
-        }
+        "loggers": {"docker_tools": {"handlers": ["default"], "level": "INFO", "propagate": False}},
     }
 
     @classmethod
@@ -45,5 +36,6 @@ class Settings(BaseModel):
                 config = tomli.load(f)
                 return cls(**config)
         return cls()
+
 
 settings = Settings.load()

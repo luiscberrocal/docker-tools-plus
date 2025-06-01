@@ -1,14 +1,10 @@
-import pytest
-from docker_tools.database import (
-    Cleanup,
-    init_db,
-    create_cleanup,
-    get_cleanup_by_name,
-    list_cleanups,
-    delete_cleanup
-)
-from docker_tools.settings import settings
 import sqlite3
+
+import pytest
+
+from docker_tools.database import Cleanup, create_cleanup, delete_cleanup, get_cleanup_by_name, list_cleanups
+from docker_tools.settings import settings
+
 
 class TestDatabaseInitialization:
     def test_table_creation(self):
@@ -16,12 +12,9 @@ class TestDatabaseInitialization:
         with sqlite3.connect(settings.database_path) as conn:
             cursor = conn.execute("PRAGMA table_info(cleanups)")
             columns = {row[1]: row[2] for row in cursor.fetchall()}
-            
-        assert columns == {
-            'id': 'INTEGER',
-            'name': 'TEXT',
-            'regular_expression': 'TEXT'
-        }
+
+        assert columns == {"id": "INTEGER", "name": "TEXT", "regular_expression": "TEXT"}
+
 
 class TestCreateCleanup:
     def test_basic_creation(self):
@@ -29,11 +22,12 @@ class TestCreateCleanup:
         assert isinstance(cleanup, Cleanup)
         assert cleanup.name == "test"
         assert cleanup.regular_expression == "test.*"
-        
+
     def test_id_auto_increment(self):
         first = create_cleanup("first", ".*")
         second = create_cleanup("second", ".*")
         assert second.id == first.id + 1
+
 
 class TestGetCleanupByName:
     @pytest.fixture(autouse=True)
@@ -60,6 +54,7 @@ class TestGetCleanupByName:
         results = get_cleanup_by_name("xyz")
         assert len(results) == 0
 
+
 class TestListCleanups:
     def test_empty_database(self):
         assert list_cleanups() == []
@@ -68,10 +63,11 @@ class TestListCleanups:
         names = ["first", "second", "third"]
         for name in names:
             create_cleanup(name, ".*")
-            
+
         results = list_cleanups()
         assert len(results) == 3
         assert {c.name for c in results} == set(names)
+
 
 class TestDeleteCleanup:
     @pytest.fixture
@@ -88,6 +84,7 @@ class TestDeleteCleanup:
         delete_cleanup(999)
         assert len(list_cleanups()) == initial_count
 
+
 class TestEdgeCases:
     def test_duplicate_names(self):
         create_cleanup("dupe", "d1")
@@ -100,7 +97,7 @@ class TestEdgeCases:
         special_name = "test@cleanup!123"
         special_regex = "^[a-z0-9_]+$"
         cleanup = create_cleanup(special_name, special_regex)
-        
+
         results = get_cleanup_by_name(special_name)
         assert results[0].regular_expression == special_regex
 
@@ -108,7 +105,7 @@ class TestEdgeCases:
         long_name = "a" * 255
         long_regex = "b" * 500
         cleanup = create_cleanup(long_name, long_regex)
-        
+
         result = get_cleanup_by_name(long_name)[0]
         assert result.name == long_name
         assert result.regular_expression == long_regex

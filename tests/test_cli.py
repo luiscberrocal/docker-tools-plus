@@ -1,9 +1,12 @@
+import subprocess
+from unittest.mock import patch
+
 import pytest
 from click.testing import CliRunner
-from unittest.mock import patch, MagicMock
+
 from docker_tools.cli import cli
 from docker_tools.database import create_cleanup, list_cleanups
-import subprocess
+
 
 class TestCLICommands:
     @pytest.fixture(autouse=True)
@@ -15,6 +18,7 @@ class TestCLICommands:
         assert "docker-tools v0.1.0" in result.output
         assert "Database location" in result.output
         assert "CLI tool for managing Docker" in result.output
+
 
 class TestCleanCommand:
     def test_new_cleanup_creation(self, runner):
@@ -51,6 +55,7 @@ class TestCleanCommand:
             assert "volumes" in result.output
             assert "images" in result.output
 
+
 class TestListCommand:
     def test_empty_list(self, runner):
         result = runner.invoke(cli, ["list"])
@@ -64,6 +69,7 @@ class TestListCommand:
         assert "app2" in result.output
         assert "regex1" in result.output
         assert "regex2" in result.output
+
 
 class TestDeleteCommand:
     def test_successful_deletion(self, runner):
@@ -88,6 +94,7 @@ class TestDeleteCommand:
             result = runner.invoke(cli, ["delete", "duplicate"])
             assert "Deleted cleanup 'duplicate'" in result.output
             assert len(list_cleanups()) == 1
+
 
 class TestErrorHandling:
     def test_invalid_id_selection(self, runner):
