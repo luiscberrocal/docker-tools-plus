@@ -1,0 +1,110 @@
+[project]
+name = "docker-tools"
+version = "0.2.0"
+description = "CLI tool for managing Docker container cleanups"
+requires-python = ">=3.10"
+dependencies = [
+    "click>=8.1.0",
+    "pydantic>=2.0",
+    "tomli>=2.0.0",
+    "python-dotenv>=0.19.0"  # Added for config loading
+]
+scripts = {docker-tools = "docker_tools.cli:cli"}  # Add entry point
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.0.0",
+    "ruff>=0.3.0",
+    "coverage>=7.0.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = "--verbose --color=yes --cov=docker_tools --cov-report=term-missing"
+filterwarnings = ["ignore::DeprecationWarning"]
+log_cli = true
+log_level = "INFO"
+markers = [
+    "unit: mark a test as unit test",
+    "integration: mark a test as integration test",
+    "database: tests involving database operations"
+]
+minversion = "7.0"
+norecursedirs = [".venv", "build", "dist", ".git"]
+xfail_strict = true
+
+[build-system]
+requires = ["flit_core >=3.9.0"]
+build-backend = "flit_core.buildapi"
+
+[tool.ruff]
+line-length = 120
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".tox",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "node_modules",
+    "site-packages",
+    "**/migrations/*.py",
+]
+[tool.ruff.lint]
+
+# https://docs.astral.sh/ruff/rules/
+
+select = [
+    "ANN", # flake8-annotations
+    "ARG", # flake8-unused-arguments
+    "B", # flake8-bugbear
+    "BLE", # flake8-blind-except
+    "D", # pydocstyle
+    "E", # pycodestyle
+    "ERA", # eradicate
+    "F", # Pyflakes
+    "FIX", # flake8-fixme
+    "G", # flake8-logging-format
+    "I", # isort
+    "LOG", # flake8-logging
+    "N", # pep-8 naming
+    "PL", # Pylint
+    "PYI", # flake8-pyi
+    "RET", # flake8-return
+    "RSE", # flake8-raise
+    "SIM", # flake8-simplify
+    "SLF", # flake8-self
+    "T20", # flake8-print
+    "UP", # pyupgrade
+]
+ignore = [
+    "ANN101", # Missing type annotation for self in method
+    "D100"
+]
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+[tool.ruff.lint.per-file-ignores]
+# Ignore `E402` (import violations) in all `__init__.py` files, and in `path/to/file.py`.
+"__init__.py" = ["E402", "D"]
+# Ignore `D` rules everywhere except for the `src/` directory.
+"**/tests/**.py" = ["D", "ANN", "ERA", "PLR", "ARG", "SLF"]
+"**/migrations/**.py" = ["D", "ANN", "ERA", "PLR", "ARG", "SLF"]
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
