@@ -4,7 +4,7 @@ import subprocess
 import click
 
 from . import __version__
-from .database import Cleanup, create_cleanup, delete_cleanup, get_cleanup_by_name, init_db, list_cleanups
+from .database import Cleanup, create_cleanup, delete_cleanup, get_cleanup_by_name, list_cleanups
 from .exceptions import DockerToolsError
 from .settings import settings
 
@@ -61,7 +61,7 @@ def _execute_cleanup(cleanup: Cleanup, force: bool):
                 click.echo(f"Successfully cleaned {resource}")
             except subprocess.CalledProcessError as e:
                 logger.error(f"Error cleaning {resource}: {e}")
-                click.secho(f"Failed to clean {resource}", fg="red")
+                click.secho(f"Failed to clean {resource}.", fg="red")
 
 
 @cli.command(name="list")
