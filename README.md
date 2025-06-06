@@ -1,4 +1,4 @@
-# Docker Tools CLI
+# Docker Tools Plus
 
 A command-line tool for managing Docker container cleanups using predefined regular expression patterns.
 
