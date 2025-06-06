@@ -8,15 +8,15 @@ Testing Setup:
 
 2. Run tests with coverage:
    ```bash
-   pytest -v --cov=docker_tools
+   pytest -v --cov=docker_tools_plus
    ```
 
 Common Test Commands:
 - Run all tests: `pytest -v`
 - Run specific test file: `pytest -v tests/test_database.py`
 - Run specific test class: `pytest -v tests/test_database.py::TestDatabaseInitialization`
-- Run with coverage: `pytest --cov=docker_tools --cov-report=term-missing`
-- Generate HTML report: `pytest --cov=docker_tools --cov-report=html`
+- Run with coverage: `pytest --cov=docker_tools_plus --cov-report=term-missing`
+- Generate HTML report: `pytest --cov=docker_tools_plus --cov-report=html`
 
 Test Configuration (from pyproject.toml):
 - Looks in "tests" directory

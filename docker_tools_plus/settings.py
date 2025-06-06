@@ -24,7 +24,7 @@ class Settings(BaseModel):
                 "stream": "ext://sys.stdout",
             }
         },
-        "loggers": {"docker_tools": {"handlers": ["default"], "level": "INFO", "propagate": False}},
+        "loggers": {"docker_tools_plus": {"handlers": ["default"], "level": "INFO", "propagate": False}},
     }
 
     @classmethod
