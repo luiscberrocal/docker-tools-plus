@@ -1,10 +1,11 @@
 import logging
 import subprocess
+from pathlib import Path
 
 import click
 
 from . import __version__
-from .database import Cleanup, create_cleanup, delete_cleanup, get_cleanup_by_name, list_cleanups
+from .database import Cleanup, _manager, create_cleanup, delete_cleanup, get_cleanup_by_name, list_cleanups
 from .exceptions import DockerToolsError
 from .settings import settings
 
@@ -68,7 +69,7 @@ def _execute_cleanup(cleanup: Cleanup, force: bool) -> None:
 def list_cleanups() -> None:
     """List all registered cleanups."""
     try:
-        cleanups = list_cleanups()
+        cleanups = _manager.list_cleanups()
         if not cleanups:
             click.echo("No cleanups found")
             return
@@ -114,7 +115,7 @@ def delete(name) -> None:
 def about() -> None:
     """Show application information."""
     click.echo(f"docker-tools v{__version__}")
-    click.echo(f"Database location: {settings.database_path}")
+    click.echo(f"Database location: {Path(settings.database_path)}")
     click.echo("CLI tool for managing Docker container cleanups")
 
 
