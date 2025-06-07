@@ -51,7 +51,10 @@ class DatabaseManager:
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cur = conn.execute("SELECT * FROM cleanups WHERE name LIKE ?", (f"%{name}%",))
-                return [Cleanup(**dict(zip(["id", "name", "regular_expression"], row, strict=False))) for row in cur.fetchall()]
+                return [
+                    Cleanup(**dict(zip(["id", "name", "regular_expression"], row, strict=False)))
+                    for row in cur.fetchall()
+                ]
         except sqlite3.Error as e:
             raise DatabaseError(f"Database query failed: {e}")
 
@@ -60,7 +63,10 @@ class DatabaseManager:
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cur = conn.execute("SELECT * FROM cleanups")
-                return [Cleanup(**dict(zip(["id", "name", "regular_expression"], row, strict=False))) for row in cur.fetchall()]
+                return [
+                    Cleanup(**dict(zip(["id", "name", "regular_expression"], row, strict=False)))
+                    for row in cur.fetchall()
+                ]
         except sqlite3.Error as e:
             raise DatabaseError(f"Database query failed: {e}")
 
@@ -87,18 +93,23 @@ class DatabaseManager:
         except sqlite3.Error as e:
             raise DatabaseError(f"Failed to create cleanup: {e}")
 
+
 # Create a global instance for the default database
 _manager = DatabaseManager(settings.database_path)
+
 
 # Public functions for backward compatibility
 def get_cleanup_by_name(name: str) -> list[Cleanup]:
     return _manager.get_cleanup_by_name(name)
 
+
 def list_cleanups() -> list[Cleanup]:
     return _manager.list_cleanups()
 
+
 def delete_cleanup(cleanup_id: int):
     return _manager.delete_cleanup(cleanup_id)
+
 
 def create_cleanup(name: str, regex: str) -> Cleanup:
     return _manager.create_cleanup(name, regex)

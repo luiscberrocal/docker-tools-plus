@@ -1,11 +1,11 @@
 import subprocess
+from unittest.mock import MagicMock, call, patch
+
 import pytest
 from click.testing import CliRunner
-from unittest.mock import patch, MagicMock, call
 
 from docker_tools_plus.cli import cli
 from docker_tools_plus.database import Cleanup
-from docker_tools_plus.settings import settings
 
 
 class TestCLI:
@@ -71,7 +71,7 @@ class TestCLI:
         self.mock_subprocess.run.side_effect = [
             subprocess.CompletedProcess([], 0, stdout="container1", stderr=""),
             subprocess.CompletedProcess([], 0),
-            subprocess.CompletedProcess([], 0)
+            subprocess.CompletedProcess([], 0),
         ]
 
         result = self.runner.invoke(cli, ["clean", "test", "--force"])
@@ -81,16 +81,21 @@ class TestCLI:
         assert self.mock_subprocess.run.call_count == 3
         # Check that the commands were called with expected arguments
         calls = [
-            call(["docker", "ps", "--format", "{{.ID}}", "--filter", "name=test.*"], capture_output=True, text=True, check=True),
+            call(
+                ["docker", "ps", "--format", "{{.ID}}", "--filter", "name=test.*"],
+                capture_output=True,
+                text=True,
+                check=True,
+            ),
             call(["docker", "stop", "container1"], capture_output=True, text=True, check=True),
-            call(["docker", "rm", "container1"], capture_output=True, text=True, check=True)
+            call(["docker", "rm", "container1"], capture_output=True, text=True, check=True),
         ]
         self.mock_subprocess.run.assert_has_calls(calls)
 
     def test_clean_multiple_matches(self):
         mock_cleanups = [
             MagicMock(spec=Cleanup, id=1, name="test", regular_expression="test1.*"),
-            MagicMock(spec=Cleanup, id=2, name="test", regular_expression="test2.*")
+            MagicMock(spec=Cleanup, id=2, name="test", regular_expression="test2.*"),
         ]
         self.mocks["get_cleanup_by_name"].return_value = mock_cleanups
 
@@ -98,7 +103,7 @@ class TestCLI:
         self.mock_subprocess.run.side_effect = [
             subprocess.CompletedProcess([], 0, stdout="container1", stderr=""),
             subprocess.CompletedProcess([], 0),
-            subprocess.CompletedProcess([], 0)
+            subprocess.CompletedProcess([], 0),
         ]
 
         # Simulate user selecting ID 2
@@ -116,7 +121,7 @@ class TestCLI:
     def test_list_cleanups(self):
         mock_cleanups = [
             MagicMock(spec=Cleanup, id=1, name="test1", regular_expression="test1.*"),
-            MagicMock(spec=Cleanup, id=2, name="test2", regular_expression="test2.*")
+            MagicMock(spec=Cleanup, id=2, name="test2", regular_expression="test2.*"),
         ]
         self.mocks["list_cleanups"].return_value = mock_cleanups
 
@@ -143,10 +148,7 @@ class TestCLI:
         assert "Cleanup deleted successfully" in result.output
 
     def test_delete_multiple_matches(self):
-        mock_cleanups = [
-            MagicMock(spec=Cleanup, id=1, name="test"),
-            MagicMock(spec=Cleanup, id=2, name="test")
-        ]
+        mock_cleanups = [MagicMock(spec=Cleanup, id=1, name="test"), MagicMock(spec=Cleanup, id=2, name="test")]
         self.mocks["get_cleanup_by_name"].return_value = mock_cleanups
 
         # Select ID 2 and confirm deletion
