@@ -16,7 +16,7 @@ class Cleanup(BaseModel):
     regular_expression: str = Field(..., min_length=1, description="Regex pattern for matching resources")
 
     @validator("regular_expression")
-    def validate_regex(cls, v):
+    def validate_regex(cls, v):  # noqa: N805
         try:
             re.compile(v)
         except re.error as e:
