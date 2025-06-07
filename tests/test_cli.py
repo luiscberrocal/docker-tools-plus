@@ -1,7 +1,7 @@
 import subprocess
 import pytest
 from click.testing import CliRunner
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, call
 
 from docker_tools_plus.cli import cli
 from docker_tools_plus.database import Cleanup
@@ -67,10 +67,25 @@ class TestCLI:
         mock_cleanup.regular_expression = "test.*"
         self.mocks["get_cleanup_by_name"].return_value = [mock_cleanup]
 
+        # Simulate finding one container
+        self.mock_subprocess.run.side_effect = [
+            subprocess.CompletedProcess([], 0, stdout="container1", stderr=""),
+            subprocess.CompletedProcess([], 0),
+            subprocess.CompletedProcess([], 0)
+        ]
+
         result = self.runner.invoke(cli, ["clean", "test", "--force"])
 
         assert mock_cleanup.regular_expression in result.output
+        # Verify commands were run: docker ps, docker stop, docker rm
         assert self.mock_subprocess.run.call_count == 3
+        # Check that the commands were called with expected arguments
+        calls = [
+            call(["docker", "ps", "--format", "{{.ID}}", "--filter", "name=test.*"], capture_output=True, text=True, check=True),
+            call(["docker", "stop", "container1"], capture_output=True, text=True, check=True),
+            call(["docker", "rm", "container1"], capture_output=True, text=True, check=True)
+        ]
+        self.mock_subprocess.run.assert_has_calls(calls)
 
     def test_clean_multiple_matches(self):
         mock_cleanups = [
@@ -78,6 +93,13 @@ class TestCLI:
             MagicMock(spec=Cleanup, id=2, name="test", regular_expression="test2.*")
         ]
         self.mocks["get_cleanup_by_name"].return_value = mock_cleanups
+
+        # Simulate successful docker commands after selection
+        self.mock_subprocess.run.side_effect = [
+            subprocess.CompletedProcess([], 0, stdout="container1", stderr=""),
+            subprocess.CompletedProcess([], 0),
+            subprocess.CompletedProcess([], 0)
+        ]
 
         # Simulate user selecting ID 2
         inputs = ["2"]
@@ -88,6 +110,8 @@ class TestCLI:
         assert "test1.*" in result.output
         assert "test2.*" in result.output
         assert "Cleaning using pattern 'test2.*'" in result.output
+        # Verify docker commands were called
+        assert self.mock_subprocess.run.call_count == 3
 
     def test_list_cleanups(self):
         mock_cleanups = [
@@ -140,9 +164,11 @@ class TestCLI:
     def test_clean_execution_error(self):
         mock_cleanup = MagicMock(spec=Cleanup, regular_expression="test.*")
         self.mocks["get_cleanup_by_name"].return_value = [mock_cleanup]
+        # Simulate error on first docker command
         self.mock_subprocess.run.side_effect = subprocess.CalledProcessError(1, "cmd")
 
         result = self.runner.invoke(cli, ["clean", "test", "--force"])
 
         assert "Failed to clean" in result.output
-        assert self.mock_logger.error.call_count == 3
+        # We should have one error log for the failed command
+        assert self.mock_logger.error.call_count == 1

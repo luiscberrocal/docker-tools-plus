@@ -14,23 +14,23 @@ A command-line tool for managing Docker container cleanups using predefined regu
 
 1. **Install using uv**:
 ```bash
-uv pip install git+https://github.com/yourusername/docker-tools.git
+uv pip install git+https://github.com/yourusername/docker-tools-plus.git
 ```
 
 2. **Verify installation**:
 ```bash
-docker-tools --help
+docker-tools-plus --help
 ```
 
 ## Usage
 
 ### Create and Execute Cleanup
 ```bash
-docker-tools clean <name>
+docker-tools-plus clean <name>
 ```
 Example flow:
 ```bash
-$ docker-tools clean reconciliation
+$ docker-tools-plus clean reconciliation
 No cleanup found matching 'reconciliation'
 Please enter a regular expression: reconciliation[a-z_]*_postgres
 
@@ -44,7 +44,7 @@ Clean images? [Y/n]: y
 
 ### List All Cleanups
 ```bash
-docker-tools list
+docker-tools-plus list
 ```
 Output:
 ```
@@ -54,11 +54,11 @@ Output:
 
 ### Delete a Cleanup
 ```bash
-docker-tools delete <name>
+docker-tools-plus delete <name>
 ```
 Example:
 ```bash
-$ docker-tools delete temp
+$ docker-tools-plus delete temp
 Multiple matches found:
 1: temp-containers
 2: temp-images
@@ -68,11 +68,11 @@ Delete cleanup 'temp-containers' (ID: 1)? [y/N]: y
 
 ### Show Info
 ```bash
-docker-tools about
+docker-tools-plus about
 ```
 Output:
 ```
-docker-tools v0.1.0
+docker-tools-plus v0.1.0
 Database location: /path/to/cleanups.db
 CLI tool for managing Docker container cleanups
 ```
@@ -95,7 +95,7 @@ uv pip install -e . --group dev
 make test
 
 # Generate coverage report
-make coverage
+make cov
 
 # Lint code
 make lint
@@ -113,7 +113,7 @@ The SQLite database is automatically created at:
 2. **Separate Resource Types** (containers/volumes/images)
 3. **Force Mode** (use with caution):
 ```bash
-docker-tools clean <name> --force
+docker-tools-plus clean <name> --force
 ```
 
 ⚠️ **Warning**: Regular expressions are powerful - test patterns with `docker ps -a`/`docker volume ls`/`docker image ls` before creating cleanup configurations.
