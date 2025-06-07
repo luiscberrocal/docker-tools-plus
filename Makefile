@@ -14,11 +14,11 @@ help:
 test:
 	$(PYTEST) -v tests/
 
-coverage:
-	$(PYTEST) --cov=docker_tools --cov-report=html
+cov:
+	$(PYTEST) --cov=docker_tools_plus --cov-report=html
 
 lint:
-	$(RUFF) check docker_tools/ tests/
+	$(RUFF) check docker_tools_plus/ tests/
 
 clean:
 	@rm -rf .coverage htmlcov/ .pytest_cache/ .ruff_cache/
