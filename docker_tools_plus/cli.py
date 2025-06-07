@@ -12,14 +12,14 @@ logger = logging.getLogger(__name__)
 
 
 @click.group()
-def cli():
-    """Docker cleanup management tool"""
+def cli() -> None:
+    """Docker cleanup management tool."""
 
 
 @cli.command()
 @click.argument("name")
 @click.option("--force", is_flag=True, help="Skip confirmation prompts")
-def clean(name, force):
+def clean(name, force) -> None:
     """Execute cleanup by name.
 
     If no exact match is found, you'll be prompted to create a new configuration.
@@ -46,8 +46,8 @@ def clean(name, force):
         click.secho(f"Error: {e}", fg="red")
 
 
-def _execute_cleanup(cleanup: Cleanup, force: bool):
-    """Run docker cleanup commands based on the selected configuration"""
+def _execute_cleanup(cleanup: Cleanup, force: bool) -> None:
+    """Run docker cleanup commands based on the selected configuration."""
     commands = {
         "containers": f"docker ps -a | grep -E '{cleanup.regular_expression}' | awk '{{print $1}}' | xargs docker rm",
         "volumes": f"docker volume ls | grep -E '{cleanup.regular_expression}' | awk '{{print $2}}' | xargs docker volume rm",
@@ -65,8 +65,8 @@ def _execute_cleanup(cleanup: Cleanup, force: bool):
 
 
 @cli.command(name="list")
-def list_cleanups():
-    """List all registered cleanups"""
+def list_cleanups() -> None:
+    """List all registered cleanups."""
     try:
         cleanups = list_cleanups()
         if not cleanups:
@@ -81,8 +81,8 @@ def list_cleanups():
 
 @cli.command()
 @click.argument("name")
-def delete(name):
-    """Delete a cleanup configuration"""
+def delete(name) -> None:
+    """Delete a cleanup configuration."""
     try:
         cleanups = get_cleanup_by_name(name)
 
@@ -111,8 +111,8 @@ def delete(name):
 
 
 @cli.command()
-def about():
-    """Show application information"""
+def about() -> None:
+    """Show application information."""
     click.echo(f"docker-tools v{__version__}")
     click.echo(f"Database location: {settings.database_path}")
     click.echo("CLI tool for managing Docker container cleanups")
