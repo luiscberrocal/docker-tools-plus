@@ -1,7 +1,7 @@
 PYTEST = pytest
 RUFF = ruff
 
-.PHONY: test coverage lint clean help
+.PHONY: test coverage lint clean help dist
 
 help:
 	@echo "Available commands:"
@@ -25,3 +25,10 @@ clean:
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
 	@find . -type f -name "*.py[co]" -delete
 	@find . -type f -name ".DS_Store" -delete
+	@rm -rf ./dist/
+
+dist: clean
+	@uv build
+	@twine upload dist/*
+
+
