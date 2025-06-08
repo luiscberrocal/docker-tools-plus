@@ -29,6 +29,6 @@ clean:
 
 dist: clean
 	@uv build
-	@twine upload dist/*
+	@uv run twine upload dist/*
 
 
