@@ -20,11 +20,13 @@ class Cleanup(BaseModel):
         try:
             re.compile(v)
         except re.error as e:
-            raise ValueError(f"Invalid regular expression: {e}")
+            raise ValueError(f"Invalid regular expression: {e}") from e
         return v
 
 
 class DatabaseManager:
+    """Manager for handling database operations related to cleanups."""
+
     def __init__(self, db_path: str) -> None:
         self.db_path = db_path
         self._initialize()
@@ -56,7 +58,7 @@ class DatabaseManager:
                     for row in cur.fetchall()
                 ]
         except sqlite3.Error as e:
-            raise DatabaseError(f"Database query failed: {e}")
+            raise DatabaseError(f"Database query failed: {e}") from e
 
     def list_cleanups(self) -> list[Cleanup]:
         """List all cleanups."""
@@ -68,7 +70,7 @@ class DatabaseManager:
                     for row in cur.fetchall()
                 ]
         except sqlite3.Error as e:
-            raise DatabaseError(f"Database query failed: {e}")
+            raise DatabaseError(f"Database query failed: {e}") from e
 
     def delete_cleanup(self, cleanup_id: int) -> None:
         """Delete a cleanup by ID."""
@@ -77,7 +79,7 @@ class DatabaseManager:
                 conn.execute("DELETE FROM cleanups WHERE id = ?", (cleanup_id,))
                 conn.commit()
         except sqlite3.Error as e:
-            raise DatabaseError(f"Failed to delete cleanup: {e}")
+            raise DatabaseError(f"Failed to delete cleanup: {e}") from e
 
     def create_cleanup(self, name: str, regex: str) -> Cleanup:
         """Create a new cleanup entry."""
