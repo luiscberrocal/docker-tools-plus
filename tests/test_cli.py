@@ -7,6 +7,13 @@ from click.testing import CliRunner
 from docker_tools_plus.cli import cli
 from docker_tools_plus.database import Cleanup
 
+class TestListCleanups:
+
+    def test_list_cleanups(self):
+        """Test listing cleanups with no cleanups present."""
+        runner = CliRunner()
+        result = runner.invoke(cli, ["list"])
+        assert "No cleanups found" in result.output
 
 class TestCLI:
     @pytest.fixture(autouse=True)
