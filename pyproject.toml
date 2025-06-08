@@ -11,7 +11,7 @@ dependencies = [
 ]
 scripts = {docker-tools-plus  = "docker_tools_plus.cli:cli"}  # Add entry point
 
-[dependency-groups]
+[project.optional-dependencies]
 dev = [
     "pytest>=8.0.0",
     "pytest-cov>=4.0.0",

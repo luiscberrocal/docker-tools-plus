@@ -89,7 +89,8 @@ path = "custom_cleanups.db"
 
 ```bash
 # Install dev dependencies
-uv pip install -e . --group dev
+uv pip install -e '.[dev]'
+
 
 # Run tests
 make test
