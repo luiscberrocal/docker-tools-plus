@@ -259,7 +259,7 @@ wheels = [
 
 [[package]]
 name = "docker-tools-plus"
-version = "0.3.1"
+version = "0.3.2"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -268,7 +268,7 @@ dependencies = [
     { name = "tomli" },
 ]
 
-[package.dev-dependencies]
+[package.optional-dependencies]
 dev = [
     { name = "coverage" },
     { name = "pytest" },
@@ -281,19 +281,15 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.1.0" },
+    { name = "coverage", marker = "extra == 'dev'", specifier = ">=7.0.0" },
     { name = "pydantic", specifier = ">=2.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
+    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0.0" },
+    { name = "pytest-mock", marker = "extra == 'dev'", specifier = ">=3.0.0" },
     { name = "python-dotenv", specifier = ">=0.19.0" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.3.0" },
     { name = "tomli", specifier = ">=2.0.0" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "coverage", specifier = ">=7.0.0" },
-    { name = "pytest", specifier = ">=8.0.0" },
-    { name = "pytest-cov", specifier = ">=4.0.0" },
-    { name = "pytest-mock", specifier = ">=3.0.0" },
-    { name = "ruff", specifier = ">=0.3.0" },
-    { name = "twine", specifier = ">=6.1.0" },
+    { name = "twine", marker = "extra == 'dev'", specifier = ">=6.1.0" },
 ]
 
 [[package]]

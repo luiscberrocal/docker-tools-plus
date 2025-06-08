@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 
 class Settings(BaseModel):
-    """Application settings configuration"""
+    """Application settings configuration."""
 
     database_path: Path = Path("cleanups.db")
     log_level: str = "INFO"
@@ -29,7 +29,7 @@ class Settings(BaseModel):
 
     @classmethod
     def load(cls):
-        """Load configuration from TOML file if exists"""
+        """Load configuration from TOML file if exists."""
         config_path = Path("configuration.toml")
         if config_path.exists():
             with open(config_path, "rb") as f:
