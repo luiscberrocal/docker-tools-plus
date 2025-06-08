@@ -115,7 +115,7 @@ def delete(name) -> None:
 def about() -> None:
     """Show application information."""
     click.echo(f"docker-tools v{__version__}")
-    click.echo(f"Database location: {Path(settings.database_path)}")
+    click.echo(f"Database location: {Path(settings.database_path).absolute()}")
     click.echo("CLI tool for managing Docker container cleanups")
 
 
