@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 class Settings(BaseModel):
     """Application settings configuration."""
 
-    database_path: Path = Path("cleanups.db")
+    database_path: Path = Field(description="Path to the SQLite database file")
     log_level: str = "INFO"
     default_timeout: int = Field(30, gt=0, description="Default timeout in seconds for Docker operations")
 
@@ -28,14 +28,23 @@ class Settings(BaseModel):
     }
 
     @classmethod
-    def load(cls):
+    def load(cls) -> "Settings":
         """Load configuration from TOML file if exists."""
         config_path = Path("configuration.toml")
         if config_path.exists():
             with open(config_path, "rb") as f:
                 config = tomli.load(f)
                 return cls(**config)
-        return cls()
+
+        database_path =  cls.get_configuration_folder() / "docker_tools_plus.db"
+        return cls(database_path=database_path)
+
+    @classmethod
+    def get_configuration_folder(cls) -> Path:
+        """Get the folder where configuration files are stored."""
+        folder = Path().home() / ".config" / "docker_tools_plus"
+        folder.mkdir(parents=True, exist_ok=True)
+        return folder
 
 
 settings = Settings.load()
