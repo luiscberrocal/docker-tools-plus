@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [0.4.2] - 2025-06-12
 
+### 🛡️ Dependencies
+
+- Added git-cliff to development dependencies. Luis C. Berrocal
+
 ### 📚 Documentation
 
 - Added git-cliff configuration. Luis C. Berrocal

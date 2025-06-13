@@ -104,8 +104,12 @@ make lint
 
 ## Database Management
 
+The default application path is `~/.config/docker-tools-plus/`. 
+
+This path will probably not work on Windows, so you can specify a custom path in `configuration.toml`:
+
 The SQLite database is automatically created at:
-- Default: `cleanups.db`
+- Default: `docker_tools_plus.db`
 - Custom: Path specified in `configuration.toml`
 
 ## Safety Features
