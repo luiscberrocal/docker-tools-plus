@@ -1,6 +1,7 @@
 [project]
 name = "docker-tools-plus"
 version = "0.4.1"
+readme = "README.md"
 description = "CLI tool for managing Docker container cleanups"
 requires-python = ">=3.10"
 dependencies = [
@@ -9,6 +10,10 @@ dependencies = [
     "tomli>=2.0.0",
     "python-dotenv>=0.19.0"  # Added for config loading
 ]
+
+[project.urls]
+Homepage = "https://github.com/your-username/your-package"
+
 scripts = {docker-tools-plus  = "docker_tools_plus.cli:cli"}  # Add entry point
 
 [project.optional-dependencies]
