@@ -1,0 +1,6 @@
+ruleDirs:
+- /home/luiscberrocal/PycharmProjects/docker-tools-plus/rules
+testConfigs:
+- testDir: /home/luiscberrocal/PycharmProjects/docker-tools-plus/rule-tests
+utilDirs:
+- /home/luiscberrocal/PycharmProjects/docker-tools-plus/utils
