@@ -3,6 +3,8 @@ import subprocess
 from pathlib import Path
 
 import click
+from rich.console import Console
+from rich.panel import Panel
 
 from . import __version__
 from .database import Cleanup, _manager, create_cleanup, delete_cleanup, get_cleanup_by_name, list_cleanups
@@ -113,10 +115,20 @@ def delete(name) -> None:
 
 @cli.command()
 def about() -> None:
-    """Show application information."""
-    click.echo(f"docker-tools v{__version__}")
-    click.echo(f"Database location: {Path(settings.database_path).absolute()}")
-    click.echo("CLI tool for managing Docker container cleanups")
+    """Show application information in a rich panel."""
+    console = Console()
+    content = (
+        f"[bold]docker-tools[/bold] [green]v{__version__}[/green]\n"
+        f"[bold]Database location:[/bold] [yellow]{Path(settings.database_path).absolute()}[/yellow]\n"
+        "[italic]CLI tool for managing Docker container cleanups[/italic]"
+    )
+    panel = Panel.fit(
+        content,
+        title="[bold green]About[/bold green]",
+        border_style="blue",
+        padding=(1, 2),
+    )
+    console.print(panel)
 
 
 if __name__ == "__main__":
