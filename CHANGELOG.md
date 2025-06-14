@@ -2,7 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.4.2] - 2025-06-12
+## [0.5.0] - 2025-06-14
+
+### 🚀 Features
+
+- Added rich about display. Luis C. Berrocal
+- Added the reset command to nuke the database. Luis C. Berrocal
+- Displaying clear error info for invalid regular expression. Luis C. Berrocal
+- Improved error message for invalid regular expression. Luis C. Berrocal
+
+### 📚 Documentation
+
+- Updated README.md. Luis C. Berrocal
+
+### 🎨 Styling
+
+- Linting and formatting. Luis C. Berrocal
+
+### ⚙️ Miscellaneous Tasks
+
+- AST grep configuration. Luis C. Berrocal
+- Added check mark for file. Luis C. Berrocal
+- Renamed Cleanup schema to CleanupSchema. Luis C. Berrocal
+
+## [0.4.2] - 2025-06-13
 
 ### 🛡️ Dependencies
 
@@ -11,6 +34,7 @@ All notable changes to this project will be documented in this file.
 ### 📚 Documentation
 
 - Added git-cliff configuration. Luis C. Berrocal
+- Readme configuration for PyPi. Luis C. Berrocal
 
 ## [0.2.0] - 2025-06-02
 

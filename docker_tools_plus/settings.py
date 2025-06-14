@@ -36,7 +36,7 @@ class Settings(BaseModel):
                 config = tomli.load(f)
                 return cls(**config)
 
-        database_path =  cls.get_configuration_folder() / "docker_tools_plus.db"
+        database_path = cls.get_configuration_folder() / "docker_tools_plus.db"
         return cls(database_path=database_path)
 
     @classmethod

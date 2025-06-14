@@ -1,5 +1,7 @@
 # Docker Tools Plus
 
+[![PyPI version](https://img.shields.io/pypi/v/docker-tools-plus)](https://pypi.org/project/docker-tools-plus/)
+
 A command-line tool for managing Docker container cleanups using predefined regular expression patterns.
 
 ## Features
@@ -26,9 +28,12 @@ docker-tools-plus --help
 
 ### Create and Execute Cleanup
 ```bash
-docker-tools-plus clean <name>
+docker-tools-plus clean <name> [--force]
 ```
-Example flow:
+- Use `--force` to skip all confirmation prompts
+- Automatically cleans all resource types without asking
+
+Example flow without `--force`:
 ```bash
 $ docker-tools-plus clean reconciliation
 No cleanup found matching 'reconciliation'
@@ -40,6 +45,16 @@ ID: 1 | Name: reconciliation | Pattern: reconciliation[a-z_]*_postgres
 Clean containers? [Y/n]: y
 Clean volumes? [Y/n]: y
 Clean images? [Y/n]: y
+```
+
+Example with `--force`:
+```bash
+$ docker-tools-plus clean reconciliation --force
+Created new cleanup config:
+ID: 1 | Name: reconciliation | Pattern: reconciliation[a-z_]*_postgres
+Cleaning containers... done
+Cleaning volumes... done
+Cleaning images... done
 ```
 
 ### List All Cleanups
@@ -70,11 +85,36 @@ Delete cleanup 'temp-containers' (ID: 1)? [y/N]: y
 ```bash
 docker-tools-plus about
 ```
-Output:
+Displays application information in a formatted panel with:
+- Application name and version (centered)
+- Database location with file existence indicator (✓ if exists, ✗ if missing)
+- Description
+
+Example panel:
 ```
-docker-tools-plus v0.1.0
-Database location: /path/to/cleanups.db
-CLI tool for managing Docker container cleanups
+┌ About ───────────────────────────────────────────────────┐
+│                                                          │
+│             docker-tools v0.4.2                          │
+│                                                          │
+│  Database location: /path/to/cleanups.db ✓               │
+│                                                          │
+│  CLI tool for managing Docker container cleanups          │
+│                                                          │
+└──────────────────────────────────────────────────────────┘
+```
+
+### Reset Database
+```bash
+docker-tools-plus reset
+```
+Creates a timestamped backup of the current database and creates a new blank one. Requires confirmation unless `--force` is used.
+
+Example:
+```bash
+$ docker-tools-plus reset
+This will rename your current database and create a new blank one. Continue? [y/N]: y
+Renamed existing database to cleanups_20240614_123456.db
+Created new blank database successfully.
 ```
 
 ## Configuration
@@ -115,8 +155,13 @@ The SQLite database is automatically created at:
 ## Safety Features
 
 1. **Confirmation Prompts** for destructive operations
+   - Always asks before cleaning each resource type (containers/volumes/images)
+   - Can be skipped with `--force` option
 2. **Separate Resource Types** (containers/volumes/images)
 3. **Force Mode** (use with caution):
+   - Skips all confirmation prompts
+   - Automatically cleans all resource types
+   - Requires explicit `--force` flag:
 ```bash
 docker-tools-plus clean <name> --force
 ```

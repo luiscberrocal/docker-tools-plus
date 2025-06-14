@@ -1,7 +1,10 @@
-import pytest
 import sqlite3
-from docker_tools_plus.database import DatabaseManager, Cleanup
+
+import pytest
+
+from docker_tools_plus.database import CleanupSchema, DatabaseManager
 from docker_tools_plus.exceptions import DatabaseError
+
 
 class TestDatabaseManager:
     @pytest.fixture
@@ -13,7 +16,7 @@ class TestDatabaseManager:
     def test_create_cleanup(self, manager):
         """Test creating a cleanup configuration."""
         cleanup = manager.create_cleanup("test", "pattern")
-        assert isinstance(cleanup, Cleanup)
+        assert isinstance(cleanup, CleanupSchema)
         assert cleanup.name == "test"
         assert cleanup.regular_expression == "pattern"
 
@@ -22,7 +25,7 @@ class TestDatabaseManager:
         manager.create_cleanup("test1", "pattern1")
         manager.create_cleanup("test2", "pattern2")
         manager.create_cleanup("other", "pattern3")
-        
+
         results = manager.get_cleanup_by_name("test")
         assert len(results) == 2
         assert {r.name for r in results} == {"test1", "test2"}
@@ -30,10 +33,10 @@ class TestDatabaseManager:
     def test_list_cleanups(self, manager):
         """Test listing all cleanups."""
         assert manager.list_cleanups() == []
-        
+
         manager.create_cleanup("test1", "pattern1")
         manager.create_cleanup("test2", "pattern2")
-        
+
         results = manager.list_cleanups()
         assert len(results) == 2
         assert {r.name for r in results} == {"test1", "test2"}
@@ -61,11 +64,12 @@ class TestDatabaseManager:
 
     def test_database_error_handling(self, manager, monkeypatch):
         """Test database error handling."""
+
         # Monkeypatch to simulate database error
         def mock_connect(*args, **kwargs):
             raise sqlite3.Error("Mocked database error")
-        
+
         monkeypatch.setattr("sqlite3.connect", mock_connect)
-        
+
         with pytest.raises(DatabaseError, match="Mocked database error"):
             manager.create_cleanup("test", "pattern")

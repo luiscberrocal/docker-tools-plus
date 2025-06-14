@@ -1,12 +1,16 @@
+import datetime
 import logging
 import subprocess
 from pathlib import Path
 
 import click
+from rich.align import Align
+from rich.console import Console, Group
+from rich.panel import Panel
 
 from . import __version__
-from .database import Cleanup, _manager, create_cleanup, delete_cleanup, get_cleanup_by_name, list_cleanups
-from .exceptions import DockerToolsError
+from .database import CleanupSchema, _manager, create_cleanup, delete_cleanup, get_cleanup_by_name, list_cleanups
+from .exceptions import DatabaseError, DockerToolsError, InvalidRegularExpressionError
 from .settings import settings
 
 logger = logging.getLogger(__name__)
@@ -26,12 +30,17 @@ def clean(name, force) -> None:
     If no exact match is found, you'll be prompted to create a new configuration.
     """
     try:
-        cleanups: list[Cleanup] = get_cleanup_by_name(name)
+        cleanups: list[CleanupSchema] = get_cleanup_by_name(name)
 
         if not cleanups:
             click.echo(f"No cleanup found matching '{name}'")
             regex = click.prompt("Please enter a regular expression for the cleanup")
-            cleanup = create_cleanup(name, regex)
+            try:
+                cleanup = create_cleanup(name, regex)
+            except InvalidRegularExpressionError as e:
+                logger.error(str(e))
+                click.secho(f"Error creating cleanup: {e}", fg="red")
+                return
         elif len(cleanups) > 1:
             click.echo("Multiple cleanups found:")
             for c in cleanups:
@@ -47,7 +56,7 @@ def clean(name, force) -> None:
         click.secho(f"Error: {e}", fg="red")
 
 
-def _execute_cleanup(cleanup: Cleanup, force: bool) -> None:
+def _execute_cleanup(cleanup: CleanupSchema, force: bool) -> None:
     """Run docker cleanup commands based on the selected configuration."""
     commands = {
         "containers": f"docker ps -a | grep -E '{cleanup.regular_expression}' | awk '{{print $1}}' | xargs docker rm",
@@ -113,10 +122,56 @@ def delete(name) -> None:
 
 @cli.command()
 def about() -> None:
-    """Show application information."""
-    click.echo(f"docker-tools v{__version__}")
-    click.echo(f"Database location: {Path(settings.database_path).absolute()}")
-    click.echo("CLI tool for managing Docker container cleanups")
+    """Show application information in a rich panel."""
+    console = Console()
+    db_path = Path(settings.database_path).absolute()
+    db_exists = db_path.exists()
+    status = "[green]✓[/green]" if db_exists else "[red]✗[/red]"
+    version_line = Align.center(f"[bold]docker-tools[/bold] [green]v{__version__}[/green]", pad=False)
+    db_line = f"[bold]Database location:[/bold] [yellow]{db_path}[/yellow] {status}"
+    description_line = "[italic]CLI tool for managing Docker container cleanups[/italic]"
+    group = Group(version_line, db_line, description_line)
+    panel = Panel.fit(
+        group,
+        title="[bold green]About[/bold green]",
+        border_style="blue",
+        padding=(1, 2),
+    )
+    console.print(panel)
+
+
+@cli.command()
+@click.option("--force", is_flag=True, help="Skip confirmation prompts")
+def reset(force: bool) -> None:
+    """Reset database by renaming current one and creating a new blank database."""
+    db_path = Path(settings.database_path).absolute()
+
+    if not db_path.exists():
+        click.echo("No database found. Nothing to reset.")
+        return
+
+    if not force and not click.confirm(
+        "This will rename your current database and create a new blank one. Continue?",
+        default=False,
+    ):
+        return
+
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    backup_path = db_path.parent / f"{db_path.stem}_{timestamp}{db_path.suffix}"
+
+    try:
+        db_path.rename(backup_path)
+        click.echo(f"Renamed existing database to {backup_path.name}")
+    except OSError as e:
+        click.secho(f"Failed to rename database: {e}", fg="red")
+        return
+
+    try:
+        # Reinitialize database manager to create new blank database
+        _manager._initialize()
+        click.secho("Created new blank database successfully.", fg="green")
+    except DatabaseError as e:
+        click.secho(f"Failed to create new database: {e}", fg="red")
 
 
 if __name__ == "__main__":
