@@ -35,7 +35,12 @@ def clean(name, force) -> None:
         if not cleanups:
             click.echo(f"No cleanup found matching '{name}'")
             regex = click.prompt("Please enter a regular expression for the cleanup")
-            cleanup = create_cleanup(name, regex)
+            try:
+                cleanup = create_cleanup(name, regex)
+            except DatabaseError as e:
+                logger.error(str(e))
+                click.secho(f"Error creating cleanup: {e}", fg="red")
+                return
         elif len(cleanups) > 1:
             click.echo("Multiple cleanups found:")
             for c in cleanups:
