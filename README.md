@@ -88,6 +88,20 @@ Example panel:
 └──────────────────────────────────────────────────────────┘
 ```
 
+### Reset Database
+```bash
+docker-tools-plus reset
+```
+Creates a timestamped backup of the current database and creates a new blank one. Requires confirmation unless `--force` is used.
+
+Example:
+```bash
+$ docker-tools-plus reset
+This will rename your current database and create a new blank one. Continue? [y/N]: y
+Renamed existing database to cleanups_20240614_123456.db
+Created new blank database successfully.
+```
+
 ## Configuration
 
 Create `configuration.toml` to customize:

@@ -3,13 +3,14 @@ import subprocess
 from pathlib import Path
 
 import click
+import datetime
 from rich.align import Align
 from rich.console import Console, Group
 from rich.panel import Panel
 
 from . import __version__
 from .database import Cleanup, _manager, create_cleanup, delete_cleanup, get_cleanup_by_name, list_cleanups
-from .exceptions import DockerToolsError
+from .exceptions import DockerToolsError, DatabaseError
 from .settings import settings
 
 logger = logging.getLogger(__name__)
@@ -132,6 +133,40 @@ def about() -> None:
         padding=(1, 2),
     )
     console.print(panel)
+
+
+@cli.command()
+@click.option("--force", is_flag=True, help="Skip confirmation prompts")
+def reset(force: bool) -> None:
+    """Reset database by renaming current one and creating a new blank database."""
+    db_path = Path(settings.database_path).absolute()
+    
+    if not db_path.exists():
+        click.echo("No database found. Nothing to reset.")
+        return
+
+    if not force and not click.confirm(
+        f"This will rename your current database and create a new blank one. Continue?",
+        default=False,
+    ):
+        return
+
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    backup_path = db_path.parent / f"{db_path.stem}_{timestamp}{db_path.suffix}"
+
+    try:
+        db_path.rename(backup_path)
+        click.echo(f"Renamed existing database to {backup_path.name}")
+    except OSError as e:
+        click.secho(f"Failed to rename database: {e}", fg="red")
+        return
+
+    try:
+        # Reinitialize database manager to create new blank database
+        _manager._initialize()
+        click.secho("Created new blank database successfully.", fg="green")
+    except DatabaseError as e:
+        click.secho(f"Failed to create new database: {e}", fg="red")
 
 
 if __name__ == "__main__":
