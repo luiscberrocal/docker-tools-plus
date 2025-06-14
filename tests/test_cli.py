@@ -7,13 +7,14 @@ from click.testing import CliRunner
 from docker_tools_plus.cli import cli
 from docker_tools_plus.database import CleanupSchema
 
-class TestListCleanups:
 
+class TestListCleanups:
     def test_list_cleanups(self):
         """Test listing cleanups with no cleanups present."""
         runner = CliRunner()
         result = runner.invoke(cli, ["list"])
         assert "No cleanups found" in result.output
+
 
 class TestCLI:
     @pytest.fixture(autouse=True)
@@ -155,7 +156,10 @@ class TestCLI:
         assert "Cleanup deleted successfully" in result.output
 
     def test_delete_multiple_matches(self):
-        mock_cleanups = [MagicMock(spec=CleanupSchema, id=1, name="test"), MagicMock(spec=CleanupSchema, id=2, name="test")]
+        mock_cleanups = [
+            MagicMock(spec=CleanupSchema, id=1, name="test"),
+            MagicMock(spec=CleanupSchema, id=2, name="test"),
+        ]
         self.mocks["get_cleanup_by_name"].return_value = mock_cleanups
 
         # Select ID 2 and confirm deletion

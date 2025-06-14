@@ -16,7 +16,7 @@ class CleanupSchema(BaseModel):
     regular_expression: str = Field(..., min_length=3, description="Regex pattern for matching resources")
 
     @validator("regular_expression")
-    def validate_regex(cls, v:str) -> str:  # noqa: N805
+    def validate_regex(cls, v: str) -> str:  # noqa: N805
         try:
             re.compile(v)
         except re.error as e:
@@ -95,7 +95,7 @@ class DatabaseManager:
                 return CleanupSchema(**dict(zip(["id", "name", "regular_expression"], row, strict=False)))
         except sqlite3.Error as e:
             raise DatabaseError(f"Failed to create cleanup: {e}") from e
-        except InvalidRegularExpressionError as e:
+        except InvalidRegularExpressionError:
             raise
 
 

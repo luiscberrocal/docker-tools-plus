@@ -1,16 +1,16 @@
+import datetime
 import logging
 import subprocess
 from pathlib import Path
 
 import click
-import datetime
 from rich.align import Align
 from rich.console import Console, Group
 from rich.panel import Panel
 
 from . import __version__
 from .database import CleanupSchema, _manager, create_cleanup, delete_cleanup, get_cleanup_by_name, list_cleanups
-from .exceptions import DockerToolsError, DatabaseError, InvalidRegularExpressionError
+from .exceptions import DatabaseError, DockerToolsError, InvalidRegularExpressionError
 from .settings import settings
 
 logger = logging.getLogger(__name__)
@@ -126,7 +126,7 @@ def about() -> None:
     console = Console()
     db_path = Path(settings.database_path).absolute()
     db_exists = db_path.exists()
-    status = f"[green]✓[/green]" if db_exists else f"[red]✗[/red]"
+    status = "[green]✓[/green]" if db_exists else "[red]✗[/red]"
     version_line = Align.center(f"[bold]docker-tools[/bold] [green]v{__version__}[/green]", pad=False)
     db_line = f"[bold]Database location:[/bold] [yellow]{db_path}[/yellow] {status}"
     description_line = "[italic]CLI tool for managing Docker container cleanups[/italic]"
@@ -145,13 +145,13 @@ def about() -> None:
 def reset(force: bool) -> None:
     """Reset database by renaming current one and creating a new blank database."""
     db_path = Path(settings.database_path).absolute()
-    
+
     if not db_path.exists():
         click.echo("No database found. Nothing to reset.")
         return
 
     if not force and not click.confirm(
-        f"This will rename your current database and create a new blank one. Continue?",
+        "This will rename your current database and create a new blank one. Continue?",
         default=False,
     ):
         return
