@@ -70,11 +70,22 @@ Delete cleanup 'temp-containers' (ID: 1)? [y/N]: y
 ```bash
 docker-tools-plus about
 ```
-Output:
+Displays application information in a formatted panel with:
+- Application name and version (centered)
+- Database location with file existence indicator (✓ if exists, ✗ if missing)
+- Description
+
+Example panel:
 ```
-docker-tools-plus v0.1.0
-Database location: /path/to/cleanups.db
-CLI tool for managing Docker container cleanups
+┌ About ───────────────────────────────────────────────────┐
+│                                                          │
+│             docker-tools v0.4.2                          │
+│                                                          │
+│  Database location: /path/to/cleanups.db ✓               │
+│                                                          │
+│  CLI tool for managing Docker container cleanups          │
+│                                                          │
+└──────────────────────────────────────────────────────────┘
 ```
 
 ## Configuration

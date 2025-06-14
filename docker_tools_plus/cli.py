@@ -3,7 +3,8 @@ import subprocess
 from pathlib import Path
 
 import click
-from rich.console import Console
+from rich.align import Align
+from rich.console import Console, Group
 from rich.panel import Panel
 
 from . import __version__
@@ -120,13 +121,12 @@ def about() -> None:
     db_path = Path(settings.database_path).absolute()
     db_exists = db_path.exists()
     status = f"[green]✓[/green]" if db_exists else f"[red]✗[/red]"
-    content = (
-        f"[bold]docker-tools[/bold] [green]v{__version__}[/green]\n"
-        f"[bold]Database location:[/bold] [yellow]{db_path}[/yellow] {status}\n"
-        "[italic]CLI tool for managing Docker container cleanups[/italic]"
-    )
+    version_line = Align.center(f"[bold]docker-tools[/bold] [green]v{__version__}[/green]", pad=False)
+    db_line = f"[bold]Database location:[/bold] [yellow]{db_path}[/yellow] {status}"
+    description_line = "[italic]CLI tool for managing Docker container cleanups[/italic]"
+    group = Group(version_line, db_line, description_line)
     panel = Panel.fit(
-        content,
+        group,
         title="[bold green]About[/bold green]",
         border_style="blue",
         padding=(1, 2),
