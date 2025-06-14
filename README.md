@@ -1,5 +1,7 @@
 # Docker Tools Plus
 
+[![PyPI version](https://img.shields.io/pypi/v/docker-tools-plus)](https://pypi.org/project/docker-tools-plus/)
+
 A command-line tool for managing Docker container cleanups using predefined regular expression patterns.
 
 ## Features
@@ -26,9 +28,12 @@ docker-tools-plus --help
 
 ### Create and Execute Cleanup
 ```bash
-docker-tools-plus clean <name>
+docker-tools-plus clean <name> [--force]
 ```
-Example flow:
+- Use `--force` to skip all confirmation prompts
+- Automatically cleans all resource types without asking
+
+Example flow without `--force`:
 ```bash
 $ docker-tools-plus clean reconciliation
 No cleanup found matching 'reconciliation'
@@ -40,6 +45,16 @@ ID: 1 | Name: reconciliation | Pattern: reconciliation[a-z_]*_postgres
 Clean containers? [Y/n]: y
 Clean volumes? [Y/n]: y
 Clean images? [Y/n]: y
+```
+
+Example with `--force`:
+```bash
+$ docker-tools-plus clean reconciliation --force
+Created new cleanup config:
+ID: 1 | Name: reconciliation | Pattern: reconciliation[a-z_]*_postgres
+Cleaning containers... done
+Cleaning volumes... done
+Cleaning images... done
 ```
 
 ### List All Cleanups
@@ -140,8 +155,13 @@ The SQLite database is automatically created at:
 ## Safety Features
 
 1. **Confirmation Prompts** for destructive operations
+   - Always asks before cleaning each resource type (containers/volumes/images)
+   - Can be skipped with `--force` option
 2. **Separate Resource Types** (containers/volumes/images)
 3. **Force Mode** (use with caution):
+   - Skips all confirmation prompts
+   - Automatically cleans all resource types
+   - Requires explicit `--force` flag:
 ```bash
 docker-tools-plus clean <name> --force
 ```
