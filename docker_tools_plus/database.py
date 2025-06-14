@@ -4,23 +4,23 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field, validator
 
-from .exceptions import DatabaseError
+from .exceptions import DatabaseError, InvalidRegularExpressionError
 from .settings import settings
 
 
 class CleanupSchema(BaseModel):
     """Pydantic model for cleanup configurations."""
 
-    id: int | None = Field(..., description="Unique identifier for the cleanup")
+    id: int | None = Field(None, description="Unique identifier for the cleanup")
     name: str = Field(..., min_length=1, max_length=64, description="Name of the cleanup configuration")
-    regular_expression: str = Field(..., min_length=1, description="Regex pattern for matching resources")
+    regular_expression: str = Field(..., min_length=3, description="Regex pattern for matching resources")
 
     @validator("regular_expression")
     def validate_regex(cls, v:str) -> str:  # noqa: N805
         try:
             re.compile(v)
         except re.error as e:
-            raise ValueError(f"Invalid regular expression: {e}") from e
+            raise InvalidRegularExpressionError(f"Invalid regular expression. '{v}' is not valid.") from e
         return v
 
 
@@ -95,8 +95,8 @@ class DatabaseManager:
                 return CleanupSchema(**dict(zip(["id", "name", "regular_expression"], row, strict=False)))
         except sqlite3.Error as e:
             raise DatabaseError(f"Failed to create cleanup: {e}") from e
-        except ValueError as e:
-            raise DatabaseError(f"Failed to create cleanup: {e}") from e
+        except InvalidRegularExpressionError as e:
+            raise
 
 
 # Create a global instance for the default database

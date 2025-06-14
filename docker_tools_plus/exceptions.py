@@ -9,6 +9,10 @@ class InvalidCleanupError(DockerToolsError):
 
     pass
 
+class InvalidRegularExpressionError(DockerToolsError):
+    """Raised when a regular expression is invalid."""
+
+    pass
 
 class DatabaseError(DockerToolsError):
     """Raised for database-related errors."""

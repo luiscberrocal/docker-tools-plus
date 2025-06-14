@@ -10,7 +10,7 @@ from rich.panel import Panel
 
 from . import __version__
 from .database import CleanupSchema, _manager, create_cleanup, delete_cleanup, get_cleanup_by_name, list_cleanups
-from .exceptions import DockerToolsError, DatabaseError
+from .exceptions import DockerToolsError, DatabaseError, InvalidRegularExpressionError
 from .settings import settings
 
 logger = logging.getLogger(__name__)
@@ -37,7 +37,7 @@ def clean(name, force) -> None:
             regex = click.prompt("Please enter a regular expression for the cleanup")
             try:
                 cleanup = create_cleanup(name, regex)
-            except DatabaseError as e:
+            except InvalidRegularExpressionError as e:
                 logger.error(str(e))
                 click.secho(f"Error creating cleanup: {e}", fg="red")
                 return
