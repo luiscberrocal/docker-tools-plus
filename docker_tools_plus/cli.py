@@ -9,7 +9,7 @@ from rich.console import Console, Group
 from rich.panel import Panel
 
 from . import __version__
-from .database import Cleanup, _manager, create_cleanup, delete_cleanup, get_cleanup_by_name, list_cleanups
+from .database import CleanupSchema, _manager, create_cleanup, delete_cleanup, get_cleanup_by_name, list_cleanups
 from .exceptions import DockerToolsError, DatabaseError
 from .settings import settings
 
@@ -30,7 +30,7 @@ def clean(name, force) -> None:
     If no exact match is found, you'll be prompted to create a new configuration.
     """
     try:
-        cleanups: list[Cleanup] = get_cleanup_by_name(name)
+        cleanups: list[CleanupSchema] = get_cleanup_by_name(name)
 
         if not cleanups:
             click.echo(f"No cleanup found matching '{name}'")
@@ -56,7 +56,7 @@ def clean(name, force) -> None:
         click.secho(f"Error: {e}", fg="red")
 
 
-def _execute_cleanup(cleanup: Cleanup, force: bool) -> None:
+def _execute_cleanup(cleanup: CleanupSchema, force: bool) -> None:
     """Run docker cleanup commands based on the selected configuration."""
     commands = {
         "containers": f"docker ps -a | grep -E '{cleanup.regular_expression}' | awk '{{print $1}}' | xargs docker rm",

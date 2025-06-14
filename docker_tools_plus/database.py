@@ -8,7 +8,7 @@ from .exceptions import DatabaseError
 from .settings import settings
 
 
-class Cleanup(BaseModel):
+class CleanupSchema(BaseModel):
     """Pydantic model for cleanup configurations."""
 
     id: int | None = Field(..., description="Unique identifier for the cleanup")
@@ -48,25 +48,25 @@ class DatabaseManager:
         except sqlite3.Error as e:
             raise DatabaseError(f"Failed to initialize database: {e}")
 
-    def get_cleanup_by_name(self, name: str) -> list[Cleanup]:
+    def get_cleanup_by_name(self, name: str) -> list[CleanupSchema]:
         """Retrieve cleanups by name pattern."""
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cur = conn.execute("SELECT * FROM cleanups WHERE name LIKE ?", (f"%{name}%",))
                 return [
-                    Cleanup(**dict(zip(["id", "name", "regular_expression"], row, strict=False)))
+                    CleanupSchema(**dict(zip(["id", "name", "regular_expression"], row, strict=False)))
                     for row in cur.fetchall()
                 ]
         except sqlite3.Error as e:
             raise DatabaseError(f"Database query failed: {e}") from e
 
-    def list_cleanups(self) -> list[Cleanup]:
+    def list_cleanups(self) -> list[CleanupSchema]:
         """List all cleanups."""
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cur = conn.execute("SELECT * FROM cleanups")
                 return [
-                    Cleanup(**dict(zip(["id", "name", "regular_expression"], row, strict=False)))
+                    CleanupSchema(**dict(zip(["id", "name", "regular_expression"], row, strict=False)))
                     for row in cur.fetchall()
                 ]
         except sqlite3.Error as e:
@@ -81,10 +81,10 @@ class DatabaseManager:
         except sqlite3.Error as e:
             raise DatabaseError(f"Failed to delete cleanup: {e}") from e
 
-    def create_cleanup(self, name: str, regex: str) -> Cleanup:
+    def create_cleanup(self, name: str, regex: str) -> CleanupSchema:
         """Create a new cleanup entry."""
         try:
-            Cleanup(name=name, regular_expression=regex)  # Validate input
+            CleanupSchema(name=name, regular_expression=regex)  # Validate input
             with sqlite3.connect(self.db_path) as conn:
                 cur = conn.execute("INSERT INTO cleanups (name, regular_expression) VALUES (?, ?)", (name, regex))
                 cleanup_id = cur.lastrowid
@@ -92,7 +92,7 @@ class DatabaseManager:
 
                 cur = conn.execute("SELECT * FROM cleanups WHERE id = ?", (cleanup_id,))
                 row = cur.fetchone()
-                return Cleanup(**dict(zip(["id", "name", "regular_expression"], row, strict=False)))
+                return CleanupSchema(**dict(zip(["id", "name", "regular_expression"], row, strict=False)))
         except sqlite3.Error as e:
             raise DatabaseError(f"Failed to create cleanup: {e}") from e
         except ValueError as e:
@@ -104,11 +104,11 @@ _manager = DatabaseManager(settings.database_path)
 
 
 # Public functions for backward compatibility
-def get_cleanup_by_name(name: str) -> list[Cleanup]:
+def get_cleanup_by_name(name: str) -> list[CleanupSchema]:
     return _manager.get_cleanup_by_name(name)
 
 
-def list_cleanups() -> list[Cleanup]:
+def list_cleanups() -> list[CleanupSchema]:
     return _manager.list_cleanups()
 
 
@@ -116,5 +116,5 @@ def delete_cleanup(cleanup_id: int):
     return _manager.delete_cleanup(cleanup_id)
 
 
-def create_cleanup(name: str, regex: str) -> Cleanup:
+def create_cleanup(name: str, regex: str) -> CleanupSchema:
     return _manager.create_cleanup(name, regex)

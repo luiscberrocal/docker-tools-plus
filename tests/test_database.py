@@ -1,6 +1,6 @@
 import pytest
 import sqlite3
-from docker_tools_plus.database import DatabaseManager, Cleanup
+from docker_tools_plus.database import DatabaseManager, CleanupSchema
 from docker_tools_plus.exceptions import DatabaseError
 
 class TestDatabaseManager:
@@ -13,7 +13,7 @@ class TestDatabaseManager:
     def test_create_cleanup(self, manager):
         """Test creating a cleanup configuration."""
         cleanup = manager.create_cleanup("test", "pattern")
-        assert isinstance(cleanup, Cleanup)
+        assert isinstance(cleanup, CleanupSchema)
         assert cleanup.name == "test"
         assert cleanup.regular_expression == "pattern"
 

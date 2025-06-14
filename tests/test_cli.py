@@ -5,7 +5,7 @@ import pytest
 from click.testing import CliRunner
 
 from docker_tools_plus.cli import cli
-from docker_tools_plus.database import Cleanup
+from docker_tools_plus.database import CleanupSchema
 
 class TestListCleanups:
 
@@ -53,7 +53,7 @@ class TestCLI:
 
     def test_clean_no_match_creates_new(self):
         self.mocks["get_cleanup_by_name"].return_value = []
-        mock_cleanup = MagicMock(spec=Cleanup)
+        mock_cleanup = MagicMock(spec=CleanupSchema)
         mock_cleanup.id = 1
         mock_cleanup.name = "test"
         mock_cleanup.regular_expression = "test.*"
@@ -68,7 +68,7 @@ class TestCLI:
         assert "Successfully cleaned" in result.output
 
     def test_clean_single_match(self):
-        mock_cleanup = MagicMock(spec=Cleanup)
+        mock_cleanup = MagicMock(spec=CleanupSchema)
         mock_cleanup.id = 1
         mock_cleanup.name = "test"
         mock_cleanup.regular_expression = "test.*"
@@ -101,8 +101,8 @@ class TestCLI:
 
     def test_clean_multiple_matches(self):
         mock_cleanups = [
-            MagicMock(spec=Cleanup, id=1, name="test", regular_expression="test1.*"),
-            MagicMock(spec=Cleanup, id=2, name="test", regular_expression="test2.*"),
+            MagicMock(spec=CleanupSchema, id=1, name="test", regular_expression="test1.*"),
+            MagicMock(spec=CleanupSchema, id=2, name="test", regular_expression="test2.*"),
         ]
         self.mocks["get_cleanup_by_name"].return_value = mock_cleanups
 
@@ -127,8 +127,8 @@ class TestCLI:
 
     def test_list_cleanups(self):
         mock_cleanups = [
-            MagicMock(spec=Cleanup, id=1, name="test1", regular_expression="test1.*"),
-            MagicMock(spec=Cleanup, id=2, name="test2", regular_expression="test2.*"),
+            MagicMock(spec=CleanupSchema, id=1, name="test1", regular_expression="test1.*"),
+            MagicMock(spec=CleanupSchema, id=2, name="test2", regular_expression="test2.*"),
         ]
         self.mocks["list_cleanups"].return_value = mock_cleanups
 
@@ -143,7 +143,7 @@ class TestCLI:
         assert "No cleanups found" in result.output
 
     def test_delete_single_match(self):
-        mock_cleanup = MagicMock(spec=Cleanup, id=1, name="test")
+        mock_cleanup = MagicMock(spec=CleanupSchema, id=1, name="test")
         self.mocks["get_cleanup_by_name"].return_value = [mock_cleanup]
 
         # Confirm deletion
@@ -155,7 +155,7 @@ class TestCLI:
         assert "Cleanup deleted successfully" in result.output
 
     def test_delete_multiple_matches(self):
-        mock_cleanups = [MagicMock(spec=Cleanup, id=1, name="test"), MagicMock(spec=Cleanup, id=2, name="test")]
+        mock_cleanups = [MagicMock(spec=CleanupSchema, id=1, name="test"), MagicMock(spec=CleanupSchema, id=2, name="test")]
         self.mocks["get_cleanup_by_name"].return_value = mock_cleanups
 
         # Select ID 2 and confirm deletion
@@ -171,7 +171,7 @@ class TestCLI:
         assert "Error: DB error" in result.output
 
     def test_clean_execution_error(self):
-        mock_cleanup = MagicMock(spec=Cleanup, regular_expression="test.*")
+        mock_cleanup = MagicMock(spec=CleanupSchema, regular_expression="test.*")
         self.mocks["get_cleanup_by_name"].return_value = [mock_cleanup]
         # Simulate error on first docker command
         self.mock_subprocess.run.side_effect = subprocess.CalledProcessError(1, "cmd")
