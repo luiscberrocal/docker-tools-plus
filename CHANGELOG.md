@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.1] - 2025-06-14
+
+### 📚 Documentation
+
+- Added home and repo urls to display in pypi. Luis C. Berrocal
+
 ## [0.5.0] - 2025-06-14
 
 ### 🚀 Features
