@@ -117,9 +117,12 @@ def delete(name) -> None:
 def about() -> None:
     """Show application information in a rich panel."""
     console = Console()
+    db_path = Path(settings.database_path).absolute()
+    db_exists = db_path.exists()
+    status = f"[green]✓[/green]" if db_exists else f"[red]✗[/red]"
     content = (
         f"[bold]docker-tools[/bold] [green]v{__version__}[/green]\n"
-        f"[bold]Database location:[/bold] [yellow]{Path(settings.database_path).absolute()}[/yellow]\n"
+        f"[bold]Database location:[/bold] [yellow]{db_path}[/yellow] {status}\n"
         "[italic]CLI tool for managing Docker container cleanups[/italic]"
     )
     panel = Panel.fit(
