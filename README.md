@@ -131,7 +131,6 @@ path = "custom_cleanups.db"
 # Install dev dependencies
 uv pip install -e '.[dev]'
 
-
 # Run tests
 make test
 
