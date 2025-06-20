@@ -9,7 +9,7 @@ from rich.console import Console, Group
 from rich.panel import Panel
 
 from . import __version__
-from .database import CleanupSchema, _manager, create_cleanup, delete_cleanup, get_cleanup_by_name, list_cleanups
+from .database import CleanupSchema, create_cleanup, delete_cleanup, get_cleanup_by_name, list_cleanups, _manager
 from .exceptions import DatabaseError, DockerToolsError, InvalidRegularExpressionError
 from .settings import settings
 
@@ -78,7 +78,7 @@ def _execute_cleanup(cleanup: CleanupSchema, force: bool) -> None:
 def list_cleanups() -> None:
     """List all registered cleanups."""
     try:
-        cleanups = _manager.list_cleanups()
+        cleanups = list_cleanups()
         if not cleanups:
             click.echo("No cleanups found")
             return

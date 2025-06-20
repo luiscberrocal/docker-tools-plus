@@ -61,7 +61,7 @@ class TestCLI:
         self.mocks["create_cleanup"].return_value = mock_cleanup
 
         # Simulate user input for regex prompt
-        inputs = ["test.*"]
+        inputs = ["test.*", "y"]
         result = self.runner.invoke(cli, ["clean", "test"], input="\n".join(inputs))
 
         assert "No cleanup found matching 'test'" in result.output
